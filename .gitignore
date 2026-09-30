@@ -1,4 +1,5 @@
-# Local WeType APK extraction and patched ARM64 runtime (APK-derived binaries).
+# Local WeType APK extraction, the AOSP system image, and the ARM64 runtime
+# (APK-derived engine libraries and the extracted bionic sysroot).
 /.deps/
 /runtime/
 /harness/engine
@@ -9,11 +10,9 @@
 /build/
 /AppDir/
 /squashfs-root/
-/syslocal/
 /fcitx5-wetype/build/
 /fcitx5-wetype/build-*/
 /WeTypeIME-*.AppImage
-/shim-diag.so
 /core
 /core.*
 **/__pycache__/

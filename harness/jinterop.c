@@ -928,6 +928,14 @@ static void run_daemon(void *h, long sid) {
 /* ---------- main ---------- */
 typedef int (*init_fn)(void *env, void *thiz, void *info);
 
+/* 打印全部模块基址（崩溃地址归因用） */
+static int print_module(struct dl_phdr_info *info, size_t size, void *data) {
+    (void)size; (void)data;
+    if (info->dlpi_name && *info->dlpi_name)
+        printf("[map] %p %s\n", (void *)info->dlpi_addr, info->dlpi_name);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
@@ -943,15 +951,6 @@ int main(int argc, char **argv) {
     g_verbose = argc > 2 ? atoi(argv[2]) : 1;
     if (g_daemon_mode) g_verbose = 0;
 
-    {
-        char shimpath[1024];
-        const char *libdir = getenv("WETYPE_LIB_DIR");
-        if (g_daemon_mode && libdir && *libdir)
-            snprintf(shimpath, sizeof shimpath, "%s/libwetype-shim.so", libdir);
-        else
-            snprintf(shimpath, sizeof shimpath, "runtime/libwetype-shim.so");
-        dlopen(shimpath, RTLD_NOW | RTLD_GLOBAL); /* 提升到全局：引擎 dlsym("free") 命中 mmap 感知版 */
-    }
     void *h = dlopen(jni_lib, RTLD_NOW);
     if (!h) { printf("dlopen %s FAILED: %s\n", jni_lib, dlerror()); return 1; }
     printf("dlopen ok: %s\n", jni_lib);
@@ -963,16 +962,8 @@ int main(int argc, char **argv) {
     build_env();
     build_vm();
 
-    /* 打印全部模块基址（崩溃地址归因用） */
-    {
-        struct link_map *lm = NULL;
-        if (!dlinfo(h, RTLD_DI_LINKMAP, &lm) && lm) {
-            for (; lm; lm = lm->l_next)
-                if (lm->l_name && *lm->l_name)
-                    printf("[map] %p %s\n", (void *)lm->l_addr, lm->l_name);
-            fflush(stdout);
-        }
-    }
+    dl_iterate_phdr(print_module, NULL);
+    fflush(stdout);
     build_vm();
 
     /* 先走 JNI_OnLoad（注册日志回调/Native 方法表），再调 initialize */
