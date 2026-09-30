@@ -70,4 +70,4 @@ scripts/10_patch_libs.sh     # 修补 APK 中的库，输出到 runtime/
 
 ## 许可证
 
-本项目使用 GPL-3.0-or-later，见 [LICENSE](LICENSE)。AppImage 内附带的 QEMU（GPL-2.0）、glibc（LGPL-2.1-or-later）和 zlib 的许可说明见镜像内的 `usr/share/doc/wetype-ime/THIRD-PARTY.md`。WeType 引擎和词库归腾讯所有，不在本许可范围内，本项目也不分发它们。
+本项目使用 GPL-3.0-or-later，见 [LICENSE](LICENSE)；`harness/jni.h` 取自 AOSP，使用 Apache-2.0。AppImage 内附带的 QEMU（GPL-2.0）、glibc（LGPL-2.1-or-later）和 zlib 的许可说明见镜像内的 `usr/share/doc/wetype-ime/THIRD-PARTY.md`。WeType 引擎和词库归腾讯所有，不在本许可范围内，本项目也不分发它们。
